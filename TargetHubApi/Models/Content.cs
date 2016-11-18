@@ -5,13 +5,12 @@ using System.Web;
 
 namespace TargetHubApi.Models
 {
-    public class Server
+    public class Content
     {
         public int Id { get; set; }
-        public string Identifier { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<ServerRequest> ServerRequests { get; set; }
-        
+
+        public virtual ICollection<ContentRequest> ContentRequests { get; set; }
     }
 }
