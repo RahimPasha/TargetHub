@@ -4,6 +4,7 @@ namespace TargetHubApi.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using Models;
 
     internal sealed class Configuration : DbMigrationsConfiguration<TargetHubApi.Infrastructure.ApplicationDbContext>
     {
@@ -26,6 +27,23 @@ namespace TargetHubApi.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+
+            context.Servers.AddOrUpdate(
+                new Server
+                {
+                    Id = 1,
+                    Name = "Behrooz",
+                    Identifier = "2345678"
+                }
+            );
+
+            context.ServerRequestTypes.AddOrUpdate(
+                new ServerRequestType
+                {
+                    Id = 1,
+                    Type = "Register"
+                }
+            );
         }
     }
 }
