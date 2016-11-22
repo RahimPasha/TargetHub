@@ -28,10 +28,12 @@ namespace TargetHubApi.Controllers
                 string filePath = "";
                 if (format == "dat")
                 {
+                    //TODO: check if the file exists even in database
                     filePath = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().DatFilePath;
                 }
                 else if (format == "xml")
                 {
+                    //TODO: check if the file exists even in database
                     filePath = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().XmlFilePath;
                 }
                 try
@@ -52,6 +54,7 @@ namespace TargetHubApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Server is not registered!");
         }
 
+        [HttpPost]
         public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName)
         {
             //Check if the server is registered or not.
