@@ -89,17 +89,17 @@ namespace TargetHubApi.Controllers
                             {
                                 db.Targets.Add(new Target {
                                     Name = TargetName,
-                                    DatFilePath = format == "xml" ? root + "/" + file.Headers.ContentDisposition.FileName : "",
-                                    XmlFilePath = format == "dat" ? root + "/" + file.Headers.ContentDisposition.FileName : ""
+                                    XmlFilePath = format == "xml" ? root + "\\" + filename : "",
+                                    DatFilePath = format == "dat" ? root + "\\" + filename : ""
                                 });
                                 db.SaveChanges();
                             }
                             else
                             {
                                 if (format == "xml")
-                                    db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().XmlFilePath = file.Headers.ContentDisposition.FileName;
+                                    db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().XmlFilePath = root + "\\" + filename;
                                 else
-                                    db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().DatFilePath = file.Headers.ContentDisposition.FileName;
+                                    db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().DatFilePath = root + "\\" + filename;
                             }
                             db.SaveChanges();
                         }
