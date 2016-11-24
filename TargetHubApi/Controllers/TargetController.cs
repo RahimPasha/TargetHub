@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,6 +10,7 @@ using System.Web.Http;
 using TargetHubApi.Infrastructure;
 using TargetHubApi.Models;
 using System.Diagnostics;
+using System.Collections.Specialized;
 
 namespace TargetHubApi.Controllers
 {
@@ -57,6 +57,7 @@ namespace TargetHubApi.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName)
         {
+            
             //Check if the server is registered or not.
             if (Registered(Identifier, ID))
             {
@@ -74,13 +75,14 @@ namespace TargetHubApi.Controllers
                     await Request.Content.ReadAsMultipartAsync(provider);
 
                     string format = "";
+                    string filename = "";
                     // This illustrates how to get the file names.
                     foreach (MultipartFileData file in provider.FileData)
                     {
                         Trace.WriteLine(file.Headers.ContentDisposition.FileName);
                         Trace.WriteLine("Server file path: " + file.LocalFileName);
-                        format = file.Headers.ContentDisposition.FileName.ToLower().EndsWith("dat") ? "dat" : "Unknown";
-                        format = file.Headers.ContentDisposition.FileName.ToLower().EndsWith("xml") ? "xml" : "Unknown";
+                        filename = file.Headers.ContentDisposition.FileName.ToLower().Replace("\"", "");
+                        format = filename.LastIndexOf(".") == -1 ? "" : filename.Substring(filename.LastIndexOf(".") + 1);
                         if (format == "xml" || format == "dat")
                         {
                             if (db.Targets.Where(t => t.Name == TargetName).Count() == 0)
