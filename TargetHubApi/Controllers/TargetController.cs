@@ -10,7 +10,6 @@ using System.Web.Http;
 using TargetHubApi.Infrastructure;
 using TargetHubApi.Models;
 using System.Diagnostics;
-using System.Collections.Specialized;
 
 namespace TargetHubApi.Controllers
 {
@@ -108,8 +107,8 @@ namespace TargetHubApi.Controllers
                             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "only xml or dat types are valid!");
                         }
                     }
-                    
-                    return Request.CreateResponse(HttpStatusCode.OK);
+
+                    return Request.CreateResponse(HttpStatusCode.OK, "Target: " + TargetName + " added");
                 }
                 catch (System.Exception e)
                 {
