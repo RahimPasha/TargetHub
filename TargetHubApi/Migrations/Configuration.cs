@@ -32,8 +32,8 @@ namespace TargetHubApi.Migrations
                 new Server
                 {
                     Id = 1,
-                    Name = "Behrooz",
-                    Identifier = "2345678"
+                    Name = "A",
+                    Identifier = "123"
                 }
             );
 

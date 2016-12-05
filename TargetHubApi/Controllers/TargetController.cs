@@ -10,6 +10,7 @@ using System.Web.Http;
 using TargetHubApi.Infrastructure;
 using TargetHubApi.Models;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace TargetHubApi.Controllers
 {
@@ -56,6 +57,11 @@ namespace TargetHubApi.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName)
         {
+            return await Upload(Identifier, ID, TargetName, new List<string>());
+        }
+        [HttpPost]
+        public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName, [FromUri] List<string> Tags)
+        { 
             
             //Check if the server is registered or not.
             if (Registered(Identifier, ID))
