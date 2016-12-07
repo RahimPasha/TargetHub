@@ -16,5 +16,6 @@ namespace TargetHubApi.Infrastructure
         public DbSet<Content> Contents { get; set; }
         public DbSet<ContentRequest> ContentRequests { get; set; }
         public DbSet<ContentRequestType> ContentRequestTypes { get; set; }
+        public DbSet<Tag> Tags { get; set; }
     }
 }

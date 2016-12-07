@@ -63,16 +63,7 @@ namespace TargetHubApi.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName, [FromUri] List<string> Tags)
         {
-            List<string> TargetTags = new List<string>();
-            foreach(string s in Tags)
-            {
-                TargetTags.Add(s);
-            }
-            if (TargetTags.Count == 0)
-            {
-                TargetTags.Add("N/A");
-            }
-            
+            List<Tag> TagList = new List<Tag>();
             
             //Check if the server is registered or not.
             if (Registered(Identifier, ID))
@@ -108,7 +99,7 @@ namespace TargetHubApi.Controllers
                                     Name = TargetName,
                                     XmlFilePath = format == "xml" ? root + "\\" + filename : "",
                                     DatFilePath = format == "dat" ? root + "\\" + filename : "",
-                                    Tags = TargetTags
+                                    Tags = {}
                                 });
                                 db.SaveChanges();
                             }
