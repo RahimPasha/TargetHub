@@ -94,14 +94,19 @@ namespace TargetHubApi.Controllers
                         {
                             if (db.Targets.Where(t => t.Name == TargetName).Count() == 0)
                             {
-                                db.Targets.Add(new Target
+                                var myTarget = new Target()
                                 {
                                     Name = TargetName,
                                     XmlFilePath = format == "xml" ? root + "\\" + filename : "",
-                                    DatFilePath = format == "dat" ? root + "\\" + filename : "",
-                                    Tags = {}
-                                });
+                                    DatFilePath = format == "dat" ? root + "\\" + filename : ""
+                                };
+                                db.Targets.Add(myTarget);
                                 db.SaveChanges();
+                                myTarget.Tags = new List<Tag>();
+                                foreach(string s in Tags)
+                                {
+                                    myTarget.Tags.Add(new Tag { TargetID = myTarget.Id, tag = s });
+                                }
                             }
                             else
                             {
@@ -109,6 +114,12 @@ namespace TargetHubApi.Controllers
                                     db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().XmlFilePath = root + "\\" + filename;
                                 else
                                     db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().DatFilePath = root + "\\" + filename;
+                                var myTarget = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault();
+                                foreach (string s in Tags)
+                                {
+                                    myTarget.Tags.Add(new Tag { TargetID = myTarget.Id, tag = s });
+                                }
+
                             }
                             db.SaveChanges();
                         }
