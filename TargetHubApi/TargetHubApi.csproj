@@ -162,6 +162,22 @@
     <Compile Include="Migrations\201611180603326_servername_added.Designer.cs">
       <DependentUpon>201611180603326_servername_added.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201612060107281_AddTagstoTarget.cs" />
+    <Compile Include="Migrations\201612060107281_AddTagstoTarget.Designer.cs">
+      <DependentUpon>201612060107281_AddTagstoTarget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612060219450_AddTagstoTarget2.cs" />
+    <Compile Include="Migrations\201612060219450_AddTagstoTarget2.Designer.cs">
+      <DependentUpon>201612060219450_AddTagstoTarget2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612060237189_AddTagstoTarget21.cs" />
+    <Compile Include="Migrations\201612060237189_AddTagstoTarget21.Designer.cs">
+      <DependentUpon>201612060237189_AddTagstoTarget21.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612070220472_AddTagstoTarget22.cs" />
+    <Compile Include="Migrations\201612070220472_AddTagstoTarget22.Designer.cs">
+      <DependentUpon>201612070220472_AddTagstoTarget22.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Content.cs" />
     <Compile Include="Models\ContentRequest.cs" />
@@ -169,6 +185,7 @@
     <Compile Include="Models\Server.cs" />
     <Compile Include="Models\ServerRequest.cs" />
     <Compile Include="Models\ServerRequestType.cs" />
+    <Compile Include="Models\Tag.cs" />
     <Compile Include="Models\Target.cs" />
     <Compile Include="Models\TargetRequest.cs" />
     <Compile Include="Models\TargetRequestType.cs" />
@@ -181,6 +198,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201611180603326_servername_added.resx">
       <DependentUpon>201611180603326_servername_added.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612060107281_AddTagstoTarget.resx">
+      <DependentUpon>201612060107281_AddTagstoTarget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612060219450_AddTagstoTarget2.resx">
+      <DependentUpon>201612060219450_AddTagstoTarget2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612060237189_AddTagstoTarget21.resx">
+      <DependentUpon>201612060237189_AddTagstoTarget21.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612070220472_AddTagstoTarget22.resx">
+      <DependentUpon>201612070220472_AddTagstoTarget22.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

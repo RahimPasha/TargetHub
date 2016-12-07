@@ -54,14 +54,25 @@ namespace TargetHubApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Server is not registered!");
         }
 
-        [HttpPost]
-        public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName)
-        {
-            return await Upload(Identifier, ID, TargetName, new List<string>());
-        }
+        //Overloading didn't work
+        //[HttpPost]
+        //public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName)
+        //{
+        //    return await Upload(Identifier, ID, TargetName, new List<string>());
+        //}
         [HttpPost]
         public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName, [FromUri] List<string> Tags)
-        { 
+        {
+            List<string> TargetTags = new List<string>();
+            foreach(string s in Tags)
+            {
+                TargetTags.Add(s);
+            }
+            if (TargetTags.Count == 0)
+            {
+                TargetTags.Add("N/A");
+            }
+            
             
             //Check if the server is registered or not.
             if (Registered(Identifier, ID))
@@ -92,10 +103,12 @@ namespace TargetHubApi.Controllers
                         {
                             if (db.Targets.Where(t => t.Name == TargetName).Count() == 0)
                             {
-                                db.Targets.Add(new Target {
+                                db.Targets.Add(new Target
+                                {
                                     Name = TargetName,
                                     XmlFilePath = format == "xml" ? root + "\\" + filename : "",
-                                    DatFilePath = format == "dat" ? root + "\\" + filename : ""
+                                    DatFilePath = format == "dat" ? root + "\\" + filename : "",
+                                    Tags = TargetTags
                                 });
                                 db.SaveChanges();
                             }
