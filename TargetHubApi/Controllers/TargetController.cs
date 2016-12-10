@@ -19,6 +19,23 @@ namespace TargetHubApi.Controllers
         ApplicationDbContext db = new ApplicationDbContext();
 
         [HttpGet]
+        public List<string> GetTargets(string Identifier,int ID,[FromUri] List<string>tags)
+        {
+            List<string> TargetNameList = new List<string>();
+            if (tags.Count != 0)
+            {
+                //var list = from t in db.Targets
+                //           join ta in db.Tags on t.ID equals ta.TargetID
+                //           where tags.Contains(ta.tag)
+                //           select t.Name;
+                TargetNameList = db.Targets.Join(db.Tags, t => t.ID, ta => ta.TargetID, (t, ta) => new { t.Name, ta.tag }).
+                    Where(t => tags.Contains(t.tag)).
+                    Select(o => o.Name).Distinct().ToList();
+            }
+            return TargetNameList;
+        }
+
+        [HttpGet]
         public HttpResponseMessage Download(string Identifier, int ID, string TargetName, string format)
         {
             //Check if the server is registered or not.
@@ -105,7 +122,7 @@ namespace TargetHubApi.Controllers
                                 myTarget.Tags = new List<Tag>();
                                 foreach(string s in Tags)
                                 {
-                                    myTarget.Tags.Add(new Tag { TargetID = myTarget.Id, tag = s });
+                                    myTarget.Tags.Add(new Tag { TargetID = myTarget.ID, tag = s });
                                 }
                             }
                             else
@@ -117,7 +134,7 @@ namespace TargetHubApi.Controllers
                                 var myTarget = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault();
                                 foreach (string s in Tags)
                                 {
-                                    myTarget.Tags.Add(new Tag { TargetID = myTarget.Id, tag = s });
+                                    myTarget.Tags.Add(new Tag { TargetID = myTarget.ID, tag = s });
                                 }
 
                             }
