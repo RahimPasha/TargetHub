@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using TargetHubApi.Infrastructure;
 using TargetHubApi.Models;
@@ -13,15 +15,26 @@ namespace TargetHubApi.Controllers
         [HttpGet]
         public IHttpActionResult Register(string server, string id)
         {
-            Server s = new Server()
+            if(server == null || id == null)
             {
-                Identifier = id,
-                Name = server
-            };
-            db.Servers.Add(s);
-            db.SaveChanges();
-            src.InsertRequest(s.Id, 1);
-            return Ok("Added!");
+                Request.CreateErrorResponse(HttpStatusCode.BadRequest, "server name or id is null!");
+            }
+            //Todo: Unregister
+            if (!Registered(id, server))
+            {
+
+
+                Server s = new Server()
+                {
+                    Identifier = id,
+                    Name = server
+                };
+                db.Servers.Add(s);
+                db.SaveChanges();
+                src.InsertRequest(s.Id, 1);
+                return Ok("Identifire:" + s.Id.ToString());
+            }
+            return Ok("This name has been registered");
         }
 
         [HttpGet]
@@ -39,6 +52,11 @@ namespace TargetHubApi.Controllers
             }).ToList();
 
             return Ok(servers);
+        }
+
+        private bool Registered(string server, string id)
+        {
+            return db.Servers.Where(s => s.Identifier == id && s.Name == server).Count() == 0 ? false : true;
         }
     }
 }
