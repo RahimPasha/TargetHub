@@ -20,10 +20,8 @@ namespace TargetHubApi.Controllers
                 Request.CreateErrorResponse(HttpStatusCode.BadRequest, "server name or id is null!");
             }
             //Todo: Unregister
-            if (!Registered(id, server))
+            if (!Registered(server, id))
             {
-
-
                 Server s = new Server()
                 {
                     Identifier = id,
