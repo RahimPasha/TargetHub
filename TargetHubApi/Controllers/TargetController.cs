@@ -134,9 +134,10 @@ namespace TargetHubApi.Controllers
                                 var myTarget = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault();
                                 foreach (string s in Tags)
                                 {
-                                    myTarget.Tags.Add(new Tag { TargetID = myTarget.ID, tag = s });
+                                    
+                                    if (!myTarget.Tags.Select(X => X.tag).Contains(s))
+                                        myTarget.Tags.Add(new Tag { TargetID = myTarget.ID, tag = s });
                                 }
-
                             }
                             db.SaveChanges();
                         }
