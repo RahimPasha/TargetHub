@@ -149,7 +149,7 @@ namespace TargetHubApi.Controllers
 
                     return Request.CreateResponse(HttpStatusCode.OK, "Target: " + TargetName + " added");
                 }
-                catch (System.Exception e)
+                catch (Exception e)
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
                 }
