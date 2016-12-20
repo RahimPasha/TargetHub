@@ -92,7 +92,7 @@ namespace TargetHubApi.Controllers
                 }
 
                 string root = HttpContext.Current.Server.MapPath("~/files");
-                var provider = new MultipartFormDataStreamProvider(root);
+                var provider = new CustomMultipartFormDataStreamProvider(root);
                 try
                 {
                     // Read the form data.
@@ -160,6 +160,15 @@ namespace TargetHubApi.Controllers
         {
             return db.Servers.Where(s => s.Id == ID && s.Identifier == identifier).Count() == 0 ? false : true;
 
+        }
+    }
+    public class CustomMultipartFormDataStreamProvider : MultipartFormDataStreamProvider
+    {
+        public CustomMultipartFormDataStreamProvider(string path) : base(path) { }
+
+        public override string GetLocalFileName(HttpContentHeaders headers)
+        {
+            return headers.ContentDisposition.FileName.Replace("\"", string.Empty);
         }
     }
 }
