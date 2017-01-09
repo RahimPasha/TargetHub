@@ -10,7 +10,7 @@ namespace TargetHubApi.Models
         public int Id { get; set; }
         public string Identifier { get; set; }
         public string Name { get; set; }
-
+        public string Address { get; set; }
         public virtual ICollection<ServerRequest> ServerRequests { get; set; }
         
     }

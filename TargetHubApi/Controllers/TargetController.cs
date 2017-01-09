@@ -25,8 +25,9 @@ namespace TargetHubApi.Controllers
             //           join ta in db.Tags on t.ID equals ta.TargetID
             //           where tags.Contains(ta.tag)
             //           select t.Name;
-            return (tags.Count != 0) ? db.Targets.Join(db.Tags, t => t.ID, ta => ta.TargetID, (t, ta) => new { t.Name, ta.tag }).
-                 Where(t => tags.Contains(t.tag)).Select(o => o.Name).Distinct().ToList() : null;
+            return (Registered(Identifier, ID)) ?
+                 (tags.Count != 0) ? db.Targets.Join(db.Tags, t => t.ID, ta => ta.TargetID, (t, ta) => new { t.Name, ta.tag }).
+                 Where(t => tags.Contains(t.tag)).Select(o => o.Name).Distinct().ToList() : null : null;
         }
 
         [HttpGet]
@@ -36,16 +37,14 @@ namespace TargetHubApi.Controllers
             if (Registered(Identifier, ID))
             {
                 HttpResponseMessage result;
-                string filePath = "";
-                if (format == "dat")
+                //TODO: check if the file exists even in database
+                string filePath = format == "dat" ? db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().DatFilePath :
+                     (format == "xml") ? TargetName.Contains("_chat") ?
+                     db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().ChatFilePath :
+                        db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().XmlFilePath : "";
+                if(filePath=="")
                 {
-                    //TODO: check if the file exists even in database
-                    filePath = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().DatFilePath;
-                }
-                else if (format == "xml")
-                {
-                    //TODO: check if the file exists even in database
-                    filePath = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().XmlFilePath;
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "This File does not exist in Hub!");
                 }
                 try
                 {
@@ -54,6 +53,8 @@ namespace TargetHubApi.Controllers
                     var stream = new FileStream(path, FileMode.Open);
                     result.Content = new StreamContent(stream);
                     result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                    db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().SubscribedServers.
+                        Add(db.Servers.Where(s => s.Id == ID && s.Identifier == Identifier).FirstOrDefault());
                 }
                 catch (Exception e)
                 {
@@ -96,8 +97,8 @@ namespace TargetHubApi.Controllers
                     // This illustrates how to get the file names.
                     foreach (MultipartFileData file in provider.FileData)
                     {
-                        Trace.WriteLine(file.Headers.ContentDisposition.FileName);
-                        Trace.WriteLine("Server file path: " + file.LocalFileName);
+                        //Trace.WriteLine(file.Headers.ContentDisposition.FileName);
+                        //Trace.WriteLine("Server file path: " + file.LocalFileName);
                         filename = file.Headers.ContentDisposition.FileName.ToLower().Replace("\"", "");
                         format = filename.LastIndexOf(".") == -1 ? "" : filename.Substring(filename.LastIndexOf(".") + 1);
                         if (format == "xml" || format == "dat")
@@ -107,7 +108,8 @@ namespace TargetHubApi.Controllers
                                 var myTarget = new Target()
                                 {
                                     Name = TargetName,
-                                    XmlFilePath = format == "xml" ? root + "\\" + filename : "",
+                                    ChatFilePath = (format == "xml" && filename.Contains("_chat.xml")) ? root + "\\" + filename : "",
+                                    XmlFilePath = (format == "xml" && !filename.Contains("_chat.xml")) ? root + "\\" + filename : "",
                                     DatFilePath = format == "dat" ? root + "\\" + filename : ""
                                 };
                                 db.Targets.Add(myTarget);
@@ -153,6 +155,19 @@ namespace TargetHubApi.Controllers
         {
             return db.Servers.Where(s => s.Id == ID && s.Identifier == identifier).Count() == 0 ? false : true;
 
+        }
+        [HttpGet]
+        public string ForwardMessage(string Identifier, int ID, string TargetName, string UserName, string SentMessage)
+        {
+            if (Registered(Identifier, ID))
+            {
+                string Uri = "/default.aspx" + "?Chat = " + TargetName + "& SentMessage=" + 
+                    SentMessage + "&User=" + UserName + "&Sender=Hub";
+                foreach (Server s in db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().SubscribedServers)
+                    WebRequest.Create(new Uri(s.Address + Uri)).GetResponse();
+                return "Message forwarded";
+            }
+            return "Server is not registered.";
         }
     }
     public class CustomMultipartFormDataStreamProvider : MultipartFormDataStreamProvider

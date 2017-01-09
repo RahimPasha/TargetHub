@@ -24,6 +24,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <ApplicationInsightsResourceId />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -138,6 +139,7 @@
     <Content Include="files\kkk.xml" />
     <Content Include="packages.config" />
     <Content Include="files\kkk.dat" />
+    <Content Include="Service References\Application Insights\ConnectedService.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -178,6 +180,10 @@
     <Compile Include="Migrations\201612070220472_AddTagstoTarget22.Designer.cs">
       <DependentUpon>201612070220472_AddTagstoTarget22.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701090402300_AddSubscribedServers.cs" />
+    <Compile Include="Migrations\201701090402300_AddSubscribedServers.Designer.cs">
+      <DependentUpon>201701090402300_AddSubscribedServers.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Content.cs" />
     <Compile Include="Models\ContentRequest.cs" />
@@ -211,6 +217,12 @@
     <EmbeddedResource Include="Migrations\201612070220472_AddTagstoTarget22.resx">
       <DependentUpon>201612070220472_AddTagstoTarget22.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701090402300_AddSubscribedServers.resx">
+      <DependentUpon>201701090402300_AddSubscribedServers.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
