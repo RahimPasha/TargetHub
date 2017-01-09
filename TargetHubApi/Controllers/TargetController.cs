@@ -124,7 +124,12 @@ namespace TargetHubApi.Controllers
                             else
                             {
                                 if (format == "xml")
-                                    db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().XmlFilePath = root + "\\" + filename;
+                                {
+                                    if(filename.Contains("_chat.xml"))
+                                        db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().ChatFilePath = root + "\\" + filename;
+                                    else
+                                        db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().XmlFilePath = root + "\\" + filename;
+                                }
                                 else
                                     db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().DatFilePath = root + "\\" + filename;
                                 var myTarget = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault();

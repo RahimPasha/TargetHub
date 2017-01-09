@@ -13,25 +13,25 @@ namespace TargetHubApi.Controllers
         ApplicationDbContext db = new ApplicationDbContext();
         ServerRequestController src = new ServerRequestController();
         [HttpGet]
-        public IHttpActionResult Register(string server, string id,string Address)
+        public IHttpActionResult Register(string server, string Identifier, string Address)
         {
-            if (server == null || id == null || Address == null)
+            if (server == null || Identifier == null || Address == null)
             {
                 Request.CreateErrorResponse(HttpStatusCode.BadRequest, "server name or id is null!");
             }
             //Todo: Unregister
-            if (!Registered(server, id,Address))
+            if (!Registered(server, Identifier, Address))
             {
                 Server s = new Server()
                 {
-                    Identifier = id,
+                    Identifier = Identifier,
                     Name = server,
                     Address = Address
                 };
                 db.Servers.Add(s);
                 db.SaveChanges();
                 src.InsertRequest(s.Id, 1);
-                return Ok("Identifire:" + s.Id.ToString());
+                return Ok("ID:" + s.Id.ToString());
             }
             return Ok("This name has been registered");
         }
@@ -53,9 +53,9 @@ namespace TargetHubApi.Controllers
             return Ok(servers);
         }
 
-        private bool Registered(string server, string id, string address)
+        private bool Registered(string server, string Identifier, string address)
         {
-            return db.Servers.Where(s => s.Identifier == id && s.Name == server && s.Address == address).Count() == 0 ? false : true;
+            return db.Servers.Where(s => s.Identifier == Identifier && s.Name == server && s.Address == address).Count() == 0 ? false : true;
         }
     }
 }
