@@ -154,6 +154,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ServerController.cs" />
     <Compile Include="Controllers\ServerRequestController.cs" />
+    <Compile Include="Controllers\SubscriptionController.cs" />
     <Compile Include="Controllers\TargetController.cs" />
     <Compile Include="Infrastructure\ApplicationDbContext.cs" />
     <Compile Include="Migrations\201611180552185_Start.cs" />
@@ -184,6 +185,14 @@
     <Compile Include="Migrations\201701090402300_AddSubscribedServers.Designer.cs">
       <DependentUpon>201701090402300_AddSubscribedServers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701090649577_AddSubscribedServers1.cs" />
+    <Compile Include="Migrations\201701090649577_AddSubscribedServers1.Designer.cs">
+      <DependentUpon>201701090649577_AddSubscribedServers1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201701090717521_AddSubscribedServers2.cs" />
+    <Compile Include="Migrations\201701090717521_AddSubscribedServers2.Designer.cs">
+      <DependentUpon>201701090717521_AddSubscribedServers2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Content.cs" />
     <Compile Include="Models\ContentRequest.cs" />
@@ -191,6 +200,7 @@
     <Compile Include="Models\Server.cs" />
     <Compile Include="Models\ServerRequest.cs" />
     <Compile Include="Models\ServerRequestType.cs" />
+    <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\Tag.cs" />
     <Compile Include="Models\Target.cs" />
     <Compile Include="Models\TargetRequest.cs" />
@@ -219,6 +229,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201701090402300_AddSubscribedServers.resx">
       <DependentUpon>201701090402300_AddSubscribedServers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701090649577_AddSubscribedServers1.resx">
+      <DependentUpon>201701090649577_AddSubscribedServers1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701090717521_AddSubscribedServers2.resx">
+      <DependentUpon>201701090717521_AddSubscribedServers2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

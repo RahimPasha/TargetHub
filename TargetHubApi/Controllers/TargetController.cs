@@ -17,6 +17,7 @@ namespace TargetHubApi.Controllers
     public class TargetController : ApiController
     {
         ApplicationDbContext db = new ApplicationDbContext();
+        SubscriptionController subCtrl = new SubscriptionController();
 
         [HttpGet]
         public List<string> GetTargets(string Identifier, int ID, [FromUri] List<string> tags)
@@ -36,13 +37,14 @@ namespace TargetHubApi.Controllers
             //Check if the server is registered or not.
             if (Registered(Identifier, ID))
             {
+                Target target = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault();
                 HttpResponseMessage result;
                 //TODO: check if the file exists even in database
-                string filePath = format == "dat" ? db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().DatFilePath :
+                string filePath = format == "dat" ? target.DatFilePath :
                      (format == "xml") ? TargetName.Contains("_chat") ?
-                     db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().ChatFilePath :
-                        db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().XmlFilePath : "";
-                if(filePath=="")
+                     target.ChatFilePath :
+                        target.XmlFilePath : "";
+                if (filePath == "")
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "This File does not exist in Hub!");
                 }
@@ -53,8 +55,7 @@ namespace TargetHubApi.Controllers
                     var stream = new FileStream(path, FileMode.Open);
                     result.Content = new StreamContent(stream);
                     result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                    db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().SubscribedServers.
-                        Add(db.Servers.Where(s => s.Id == ID && s.Identifier == Identifier).FirstOrDefault());
+                    subCtrl.InsertSubscription(target.ID, ID);
                 }
                 catch (Exception e)
                 {
@@ -75,7 +76,7 @@ namespace TargetHubApi.Controllers
         public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName, [FromUri] List<string> Tags)
         {
             List<Tag> TagList = new List<Tag>();
-            
+
             //Check if the server is registered or not.
             if (Registered(Identifier, ID))
             {
@@ -115,7 +116,7 @@ namespace TargetHubApi.Controllers
                                 db.Targets.Add(myTarget);
                                 db.SaveChanges();
                                 myTarget.Tags = new List<Tag>();
-                                foreach(string s in Tags)
+                                foreach (string s in Tags)
                                 {
                                     myTarget.Tags.Add(new Tag { TargetID = myTarget.ID, tag = s });
                                 }
@@ -129,7 +130,7 @@ namespace TargetHubApi.Controllers
                                 var myTarget = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault();
                                 foreach (string s in Tags)
                                 {
-                                    
+
                                     if (!myTarget.Tags.Select(X => X.tag).Contains(s))
                                         myTarget.Tags.Add(new Tag { TargetID = myTarget.ID, tag = s });
                                 }
@@ -161,22 +162,30 @@ namespace TargetHubApi.Controllers
         {
             if (Registered(Identifier, ID))
             {
-                string Uri = "/default.aspx" + "?Chat = " + TargetName + "& SentMessage=" + 
+                int TargetID = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().ID;
+                string Uri = "/default.aspx" + "?Chat = " + TargetName + "& SentMessage=" +
                     SentMessage + "&User=" + UserName + "&Sender=Hub";
-                foreach (Server s in db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().SubscribedServers)
+                List<Server> servers = db.Servers.
+                    Join(db.Subscriptions, s => s.Id, su => su.ServerID, (s, su) => new { s, su.TargetID }).
+                    Where(t => t.TargetID == TargetID).Select(o => o.s).ToList();
+                foreach (Server s in db.Servers.
+                    Join(db.Subscriptions, s => s.Id, su => su.ServerID, (s, su) => new { s, su.TargetID }).
+                    Where(t => t.TargetID == TargetID).Select(o => o.s).ToList())
+                {
                     WebRequest.Create(new Uri(s.Address + Uri)).GetResponse();
-                return "Message forwarded";
+                    return "Message forwarded";
+                }
             }
             return "Server is not registered.";
         }
-    }
-    public class CustomMultipartFormDataStreamProvider : MultipartFormDataStreamProvider
-    {
-        public CustomMultipartFormDataStreamProvider(string path) : base(path) { }
-
-        public override string GetLocalFileName(HttpContentHeaders headers)
+        public class CustomMultipartFormDataStreamProvider : MultipartFormDataStreamProvider
         {
-            return headers.ContentDisposition.FileName.Replace("\"", string.Empty);
+            public CustomMultipartFormDataStreamProvider(string path) : base(path) { }
+
+            public override string GetLocalFileName(HttpContentHeaders headers)
+            {
+                return headers.ContentDisposition.FileName.Replace("\"", string.Empty);
+            }
         }
     }
 }

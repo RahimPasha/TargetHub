@@ -11,7 +11,7 @@ namespace TargetHubApi.Controllers
        
         public bool InsertRequest(int serverID, int serverRequestTypeID)
         {
-            ServerRequest req = new Models.ServerRequest()
+            ServerRequest req = new ServerRequest()
             {
                 ServerId = serverID,
                 ServerRequestTypeId = serverRequestTypeID

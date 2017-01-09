@@ -12,6 +12,7 @@ namespace TargetHubApi.Models
         public string Name { get; set; }
         public string Address { get; set; }
         public virtual ICollection<ServerRequest> ServerRequests { get; set; }
-        
+        public virtual ICollection<Subscription> Subscriptions { get; set; }
+
     }
 }
