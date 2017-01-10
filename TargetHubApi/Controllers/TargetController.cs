@@ -38,15 +38,16 @@ namespace TargetHubApi.Controllers
             if (Registered(Identifier, ID))
             {
                 Target target = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault();
+                if(target == null)
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Target does not exist!");
                 HttpResponseMessage result;
                 //TODO: check if the file exists even in database
-                string filePath = format == "dat" ? target.DatFilePath :
-                     (format == "xml") ? TargetName.Contains("_chat") ?
-                     target.ChatFilePath :
-                        target.XmlFilePath : "";
+                string filePath = format == "dat" ? 
+                    target.DatFilePath : format == "xml" ? 
+                    target.XmlFilePath : format=="chat"? target.ChatFilePath : "";
                 if (filePath == "")
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "This File does not exist in Hub!");
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "This File does not exist in the Hub!");
                 }
                 try
                 {
@@ -54,24 +55,22 @@ namespace TargetHubApi.Controllers
                     result = new HttpResponseMessage(HttpStatusCode.OK);
                     var stream = new FileStream(path, FileMode.Open);
                     result.Content = new StreamContent(stream);
-                    result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                    subCtrl.InsertSubscription(target.ID, ID);
+                    result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");                    
+                    if (target.Subscriptions.Where(x => x.ServerID == ID).Count() == 0)
+                        target.Subscriptions.Add(new Subscription { TargetID = target.ID, ServerID = ID });
+                    db.SaveChanges();
                 }
+                
                 catch (Exception e)
                 {
                     return Request.CreateErrorResponse(HttpStatusCode.BadRequest, e);
                 }
+                
                 return result;
             }
             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Server is not registered!");
         }
 
-        //Overloading didn't work
-        //[HttpPost]
-        //public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName)
-        //{
-        //    return await Upload(Identifier, ID, TargetName, new List<string>());
-        //}
         [HttpPost]
         public async Task<HttpResponseMessage> Upload(string Identifier, int ID, string TargetName, [FromUri] List<string> Tags)
         {
@@ -104,9 +103,10 @@ namespace TargetHubApi.Controllers
                         format = filename.LastIndexOf(".") == -1 ? "" : filename.Substring(filename.LastIndexOf(".") + 1);
                         if (format == "xml" || format == "dat")
                         {
-                            if (db.Targets.Where(t => t.Name == TargetName).Count() == 0)
+                            Target myTarget = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault();
+                            if (myTarget == null)
                             {
-                                var myTarget = new Target()
+                                myTarget = new Target()
                                 {
                                     Name = TargetName,
                                     ChatFilePath = (format == "xml" && filename.Contains("_chat.xml")) ? root + "\\" + filename : "",
@@ -125,14 +125,13 @@ namespace TargetHubApi.Controllers
                             {
                                 if (format == "xml")
                                 {
-                                    if(filename.Contains("_chat.xml"))
-                                        db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().ChatFilePath = root + "\\" + filename;
+                                    if (filename.Contains("_chat.xml"))
+                                        myTarget.ChatFilePath = root + "\\" + filename;
                                     else
-                                        db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().XmlFilePath = root + "\\" + filename;
+                                        myTarget.XmlFilePath = root + "\\" + filename;
                                 }
                                 else
-                                    db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().DatFilePath = root + "\\" + filename;
-                                var myTarget = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault();
+                                    myTarget.DatFilePath = root + "\\" + filename;
                                 foreach (string s in Tags)
                                 {
 
@@ -140,6 +139,8 @@ namespace TargetHubApi.Controllers
                                         myTarget.Tags.Add(new Tag { TargetID = myTarget.ID, tag = s });
                                 }
                             }
+                            if (myTarget.Subscriptions != null && myTarget.Subscriptions.Where(x => x.ServerID == ID).Count() == 0)
+                                myTarget.Subscriptions.Add(new Subscription { TargetID = myTarget.ID, ServerID = ID });
                             db.SaveChanges();
                         }
                         else
@@ -168,7 +169,7 @@ namespace TargetHubApi.Controllers
             if (Registered(Identifier, ID))
             {
                 int TargetID = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().ID;
-                string Uri = "/default.aspx" + "?Chat = " + TargetName + "& SentMessage=" +
+                string Uri = "/default.aspx" + "?Chat=" + TargetName + "& SentMessage=" +
                     SentMessage + "&User=" + UserName + "&Sender=Hub";
                 List<Server> servers = db.Servers.
                     Join(db.Subscriptions, s => s.Id, su => su.ServerID, (s, su) => new { s, su.TargetID }).
