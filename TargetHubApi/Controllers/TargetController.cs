@@ -47,7 +47,7 @@ namespace TargetHubApi.Controllers
                     target.XmlFilePath : format=="chat"? target.ChatFilePath : "";
                 if (filePath == "")
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "This File does not exist in the Hub!");
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "This File does not exist in the Hub!");
                 }
                 try
                 {
