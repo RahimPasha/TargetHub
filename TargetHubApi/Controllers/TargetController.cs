@@ -169,7 +169,7 @@ namespace TargetHubApi.Controllers
             if (Registered(Identifier, ID))
             {
                 int TargetID = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().ID;
-                string Uri = "/default.aspx" + "?Chat=" + TargetName + "& SentMessage=" +
+                string Uri = "/default.aspx" + "?Chat=" + TargetName + "&SentMessage=" +
                     SentMessage + "&User=" + UserName + "&Sender=Hub";
                 List<Server> servers = db.Servers.
                     Join(db.Subscriptions, s => s.Id, su => su.ServerID, (s, su) => new { s, su.TargetID }).
@@ -178,8 +178,11 @@ namespace TargetHubApi.Controllers
                     Join(db.Subscriptions, s => s.Id, su => su.ServerID, (s, su) => new { s, su.TargetID }).
                     Where(t => t.TargetID == TargetID).Select(o => o.s).ToList())
                 {
-                    WebRequest.Create(new Uri(s.Address + Uri)).GetResponse();
-                    return "Message forwarded";
+                    if (s.Id != ID)
+                    {
+                        WebRequest.Create(new Uri(s.Address + Uri)).GetResponse();
+                        return "Message forwarded";
+                    }
                 }
             }
             return "Server is not registered.";
