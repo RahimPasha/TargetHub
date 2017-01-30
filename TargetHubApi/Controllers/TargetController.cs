@@ -171,9 +171,6 @@ namespace TargetHubApi.Controllers
                 int TargetID = db.Targets.Where(t => t.Name == TargetName).FirstOrDefault().ID;
                 string Uri = "/default.aspx" + "?Chat=" + TargetName + "&SentMessage=" +
                     SentMessage + "&User=" + UserName + "&Sender=Hub";
-                List<Server> servers = db.Servers.
-                    Join(db.Subscriptions, s => s.Id, su => su.ServerID, (s, su) => new { s, su.TargetID }).
-                    Where(t => t.TargetID == TargetID).Select(o => o.s).ToList();
                 foreach (Server s in db.Servers.
                     Join(db.Subscriptions, s => s.Id, su => su.ServerID, (s, su) => new { s, su.TargetID }).
                     Where(t => t.TargetID == TargetID).Select(o => o.s).ToList())
